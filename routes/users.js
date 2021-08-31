@@ -16,4 +16,10 @@ router.route('/:userId')
     .patch(userController.update)
     .delete(userController.unlink);
 
+router.route('/AccountNumber/:accountNumber')
+    .get(userController.getUserByAccountNumber);
+
+router.route('/IdentityNumber/:identityNumber')
+    .get(userController.getUserByIdentityNumber);
+
 module.exports = router;

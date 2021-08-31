@@ -25,8 +25,54 @@ const index = (_, res) => {
 }
 
 const show = (req, res) => {
-    let id = req.params.userId;
+    const id = req.params.userId;
     return User.findById(id)
+        .then(user => {
+            if (user) {
+                res.status(200);
+                res.json(serialize(user));
+            }
+            else {
+                res.status(404);
+                res.json({
+                    errors: ["Not Found"]
+                });
+            }
+        })
+        .catch(err => {
+            res.status(404);
+            res.json({
+                errors: [err.message]
+            });
+        })
+}
+
+const getUserByAccountNumber = (req, res) => {
+    const accountNumber = req.params.accountNumber;
+    return User.findOne({ accountNumber: accountNumber })
+        .then(user => {
+            if (user) {
+                res.status(200);
+                res.json(serialize(user));
+            }
+            else {
+                res.status(404);
+                res.json({
+                    errors: ["Not Found"]
+                });
+            }
+        })
+        .catch(err => {
+            res.status(404);
+            res.json({
+                errors: [err.message]
+            });
+        })
+}
+
+const getUserByIdentityNumber = (req, res) => {
+    const identityNumber = req.params.identityNumber;
+    return User.findOne({ identityNumber: identityNumber })
         .then(user => {
             if (user) {
                 res.status(200);
@@ -122,5 +168,7 @@ module.exports = {
     show,
     create,
     update,
-    unlink
+    unlink,
+    getUserByAccountNumber,
+    getUserByIdentityNumber,
 }
