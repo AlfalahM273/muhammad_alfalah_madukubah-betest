@@ -5,12 +5,13 @@ exports.connect = () => {
     const mongoHost = process.env.MONGO_HOST;
     const mongoDb = process.env.MONGO_DB;
     let mongoConnection = "";
-    if (mongoUser || mongoPassword){
-      mongoConnection = `mongodb://${mongoUser}:${mongoPassword}@${mongoHost}/${mongoDb}`;
-    }
-    else{
-      mongoConnection = `mongodb://${mongoHost}/${mongoDb}`;
-    }
+    // if (mongoUser || mongoPassword){
+    //   mongoConnection = `mongodb://${mongoUser}:${mongoPassword}@${mongoHost}/${mongoDb}`;
+    // }
+    // else{
+    //   mongoConnection = `mongodb://${mongoHost}/${mongoDb}`;
+    // }
+    mongoConnection = process.env.MONGO_DB_URL;
     mongoose.connect(mongoConnection, {
         useUnifiedTopology: true,
         useNewUrlParser: true
