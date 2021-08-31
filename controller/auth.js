@@ -20,6 +20,7 @@ const signUp = (req, res) => {
         .then(user => {
             const token = jwt.sign(
                 {
+                    id: user._id,
                     userName: user.userName,
                     emailAddress: user.emailAddress,
                     identityNumber: user.identityNumber
@@ -58,6 +59,7 @@ const signIn = async (req, res) => {
         if (user && (await bcrypt.compare(password, user.password))) {
             const token = jwt.sign(
                 {
+                    id: user._id,
                     userName: user.userName,
                     emailAddress: user.emailAddress,
                     identityNumber: user.identityNumber

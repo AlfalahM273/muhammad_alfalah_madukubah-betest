@@ -1,4 +1,5 @@
 const User = require('../model/user');
+const { client } = require('../services/cache')
 
 const serialize = (data) => (
     {
@@ -11,17 +12,28 @@ const serialize = (data) => (
 );
 
 const index = (_, res) => {
-    return User.find()
-        .then(users => {
-            res.status(201);
-            res.json(users.map(val => serialize(val)));
-        })
-        .catch(err => {
-            res.status(500);
-            res.json({
-                errors: [err.message]
-            });
-        })
+    const redisKey = 'user';
+    client.get(redisKey, async (err, data) => {
+        if (data) {
+            res.status(200);
+            res.json(JSON.parse(data));
+            return;
+        } else {
+            return User.find()
+                .then(users => {
+                    client.set(redisKey, JSON.stringify(users.map(val => serialize(val))), 'EX', 60); // simpan hasil request ke dalam redis dalam bentuk JSON yang sudah di jadikan string, kita setting expired selaman 60 (detik)            
+                    res.status(201);
+                    res.json(users.map(val => serialize(val)));
+                })
+                .catch(err => {
+                    res.status(500);
+                    res.json({
+                        errors: [err.message]
+                    });
+                })
+        }
+    });
+
 }
 
 const show = (req, res) => {
@@ -109,6 +121,7 @@ const create = (req, res) => {
         password: password
     })
         .then(user => {
+            client.del("user")
             res.status(201);
             res.json(serialize(user));
         })
@@ -127,6 +140,7 @@ const update = (req, res) => {
         .then(result => {
             if (result) {
                 return User.findById(result._id).then(user => {
+                    client.del("user")
                     res.status(201);
                     res.json(serialize(user));
                 });
@@ -138,18 +152,31 @@ const update = (req, res) => {
                 });
             }
         })
-        .catch(err => {
+        .catch(error => {
+            if(error.code && error.code === 11000){
+                error.message = "";
+                error.message = Object.keys(error.keyValue).join(", ")
+                error.message += " already taken";
+            }
             res.status(422);
             res.json({
-                errors: [err.message]
+                errors: [error.message]
             });
         })
 }
 
 const unlink = (req, res) => {
     let id = req.params.userId;
+    if (id == req.user.id) {
+        res.status(422);
+        res.json({
+            errors: ["Cannot delete your own data"]
+        });
+        return;
+    }
     return User.findByIdAndRemove(id)
         .then(_ => {
+            client.del("user")
             res.status(201);
             res.json({
                 message: "successfully deleted"
