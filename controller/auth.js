@@ -56,7 +56,6 @@ const signIn = async (req, res) => {
         const user = await User.findOne({ userName });
 
         if (user && (await bcrypt.compare(password, user.password))) {
-            // Create token
             const token = jwt.sign(
                 {
                     userName: user.userName,

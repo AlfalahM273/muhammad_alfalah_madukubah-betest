@@ -1,6 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controller/user');
+const jwtAuth = require('../middleware/auth');
+
+router.use([
+    jwtAuth,
+]);
 
 router.route('/')
     .get(userController.index)
