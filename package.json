@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "start ./bin/www",
-    "dev": "nodemon ./bin/www"
+    "dev": "nodemon ./bin/www",
+    "test": "jest  --passWithNoTests"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
@@ -13,9 +14,28 @@
     "debug": "~2.6.9",
     "dotenv": "^10.0.0",
     "express": "~4.16.1",
+    "jest": "^27.1.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.0.2",
     "morgan": "~1.9.1",
     "redis": "^3.1.2"
+  },
+  "jest": {
+    "roots": [
+      "<rootDir>"
+    ],
+    "testRegex": "(/__test__/.*|(\\.|/)(test|spec))\\.[jt]sx?$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx"
+    ],
+    "verbose": true,
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "<rootDir>/controllers/**/*.js",
+      "<rootDir>/middlewares/**/*.js"
+    ]
   }
 }
