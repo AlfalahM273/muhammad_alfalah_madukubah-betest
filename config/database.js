@@ -1,16 +1,5 @@
 const mongoose = require('mongoose');
 exports.connect = () => {
-    const mongoUser = process.env.MONGO_USER;
-    const mongoPassword = process.env.MONGO_PASSWORD;
-    const mongoHost = process.env.MONGO_HOST;
-    const mongoDb = process.env.MONGO_DB;
-    let mongoConnection = "";
-    // if (mongoUser || mongoPassword){
-    //   mongoConnection = `mongodb://${mongoUser}:${mongoPassword}@${mongoHost}/${mongoDb}`;
-    // }
-    // else{
-    //   mongoConnection = `mongodb://${mongoHost}/${mongoDb}`;
-    // }
     mongoConnection = process.env.MONGO_DB_URL;
     mongoose.connect(mongoConnection, {
         useUnifiedTopology: true,

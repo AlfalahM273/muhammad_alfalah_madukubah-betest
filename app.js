@@ -6,8 +6,6 @@ const logger = require('morgan');
 const usersRouter = require('./routes/users');
 const authRouter = require('./routes/auth');
 
-// clearCache   = require('./services/cache')
-
 const app = express();
 
 app.use(logger('dev'));
