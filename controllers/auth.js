@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
+const client = require('../services/cache');
 
 const signUp = (req, res) => {
     const {
@@ -18,6 +19,7 @@ const signUp = (req, res) => {
         password: password
     })
         .then(user => {
+            client.del("user")
             const token = jwt.sign(
                 {
                     id: user._id,
@@ -51,7 +53,10 @@ const signIn = async (req, res) => {
         } = req.body;
 
         if (!(userName && password)) {
-            res.status(400).send("All input is required");
+            res.status(400);
+            res.json({
+                errors: ["All input is required"]
+            })
             return
         }
         const user = await User.findOne({ userName });
@@ -76,9 +81,10 @@ const signIn = async (req, res) => {
             return;
         }
         res.status(400);
-            res.json({
-                errors: "Invalid Credentials"
-            })
+        res.json({
+            errors: ["Invalid Credentials"]
+        })
+        return;
     } catch (err) {
         res.status(500);
         res.json({

@@ -12,20 +12,18 @@ const auth = (req, res, next) => {
 
     if (!token) {
         return res.status(403).json({
-            err: ["A token is required for authentication"]
+            errors: ["A token is required for authentication"]
         });
     }
     try {
         const decoded = jwt.verify(token, process.env.TOKEN_KEY);
         req.user = decoded;
         next();
-
     } catch (err) {
-        console.log(err.message);
         if (err) {
             res.status(401);
             res.json({
-                err: ['please re-login']
+                errors: ['please re-login']
             });
             return;
         }

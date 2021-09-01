@@ -1,5 +1,5 @@
 const User = require('../models/user');
-const { client } = require('../services/cache')
+const client = require('../services/cache')
 
 const serialize = (data) => (
     {
@@ -21,8 +21,8 @@ const index = (_, res) => {
         } else {
             return User.find()
                 .then(users => {
-                    client.set(redisKey, JSON.stringify(users.map(val => serialize(val))), 'EX', 60); // simpan hasil request ke dalam redis dalam bentuk JSON yang sudah di jadikan string, kita setting expired selaman 60 (detik)            
-                    res.status(201);
+                    client.set(redisKey, JSON.stringify(users.map(val => serialize(val))));
+                    res.status(200);
                     res.json(users.map(val => serialize(val)));
                 })
                 .catch(err => {
@@ -33,7 +33,6 @@ const index = (_, res) => {
                 })
         }
     });
-
 }
 
 const show = (req, res) => {
@@ -52,7 +51,7 @@ const show = (req, res) => {
             }
         })
         .catch(err => {
-            res.status(404);
+            res.status(500);
             res.json({
                 errors: [err.message]
             });
@@ -75,7 +74,7 @@ const getUserByAccountNumber = (req, res) => {
             }
         })
         .catch(err => {
-            res.status(404);
+            res.status(500);
             res.json({
                 errors: [err.message]
             });
@@ -98,7 +97,7 @@ const getUserByIdentityNumber = (req, res) => {
             }
         })
         .catch(err => {
-            res.status(404);
+            res.status(500);
             res.json({
                 errors: [err.message]
             });
@@ -141,7 +140,7 @@ const update = (req, res) => {
             if (result) {
                 return User.findById(result._id).then(user => {
                     client.del("user")
-                    res.status(201);
+                    res.status(200);
                     res.json(serialize(user));
                 });
             }
@@ -153,7 +152,7 @@ const update = (req, res) => {
             }
         })
         .catch(error => {
-            if(error.code && error.code === 11000){
+            if (error.code && error.code === 11000) {
                 error.message = "";
                 error.message = Object.keys(error.keyValue).join(", ")
                 error.message += " already taken";
@@ -177,7 +176,7 @@ const unlink = (req, res) => {
     return User.findByIdAndRemove(id)
         .then(_ => {
             client.del("user")
-            res.status(201);
+            res.status(200);
             res.json({
                 message: "successfully deleted"
             });
